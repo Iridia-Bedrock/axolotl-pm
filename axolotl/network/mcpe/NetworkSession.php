@@ -25,7 +25,7 @@ use UnexpectedValueException;
 
 class NetworkSession extends NetworkSessionPM{
 	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, PacketBroadcaster $broadcaster, EntityEventBroadcaster $entityEventBroadcaster, Compressor $compressor, TypeConverterPM $typeConverter, string $ip, int $port){
-		parent::__construct($server, $manager, $packetPool, $sender, $broadcaster, $entityEventBroadcaster, $compressor, $converter = new TypeConverter(), $ip, $port);
+		parent::__construct($server, $manager, $packetPool, $sender, $broadcaster, $entityEventBroadcaster, $compressor, $converter = (new \ReflectionClass(TypeConverter::class))->newInstanceWithoutConstructor(), $ip, $port);
 		Reflection::copyProperties($typeConverter, $converter);
 		$converter->setNetworkSession($this);
 	}
