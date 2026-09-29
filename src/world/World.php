@@ -1061,8 +1061,9 @@ class World implements ChunkManager{
 							$p->onChunkChanged($chunkX, $chunkZ, $chunk);
 						}
 					}else{
-						foreach($this->createBlockUpdatePackets($blocks) as $packet){
-							$this->broadcastPacketToPlayersUsingChunk($chunkX, $chunkZ, $packet);
+						foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
+							/** @var \axolotl\world\World $this */
+							NetworkBroadcastUtils::broadcastPackets([$p], $this->createBlockUpdatePackets($blocks, $p->getBlockMapping()->toArray()));
 						}
 					}
 				}

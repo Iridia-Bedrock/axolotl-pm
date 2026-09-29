@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use axolotl\world\World;
 use pocketmine\block\BaseSign;
 use pocketmine\block\Lectern;
 use pocketmine\block\tile\Sign;
@@ -538,7 +539,10 @@ class InGamePacketHandler extends PacketHandler{
 			}else{
 				$blocks[] = $blockPos;
 			}
-			foreach($this->player->getWorld()->createBlockUpdatePackets($blocks) as $packet){
+
+			/** @var World $world */
+			$world = $this->player->getWorld();
+			foreach($world->createBlockUpdatePackets($blocks, $this->player->getBlockMapping()->toArray()) as $packet){
 				$this->session->sendDataPacket($packet);
 			}
 		}
