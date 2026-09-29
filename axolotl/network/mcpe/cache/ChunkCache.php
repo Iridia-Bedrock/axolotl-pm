@@ -19,10 +19,12 @@ use pocketmine\world\World;
 use function is_string;
 use function spl_object_id;
 use function strlen;
+use function serialize;
+use function md5;
 
 #[AxolotlPatch(
 	type: PatchType::REWRITE,
-	reason: "Makes chunk caching per-player to allow custom client-side block views.",
+	reason: "Optimized chunk caching: shares a 'default' cache for normal players, and branches to custom caches only when block spoofing is active.",
 	upstreamVersion: "5.49.2"
 )]
 class ChunkCache implements ChunkListener{
@@ -33,7 +35,9 @@ class ChunkCache implements ChunkListener{
 	public static function getInstance(Player $player, World $world, Compressor $compressor) : self{
 		$worldId = spl_object_id($world);
 		$compressorId = spl_object_id($compressor);
-		$playerId = $player->getId();
+
+		$mappings = $player->getBlockMapping()->toArray();
+		$mappingHash = empty($mappings) ? 'default' : md5(serialize($mappings));
 
 		if(!isset(self::$instances[$worldId])){
 			self::$instances[$worldId] = [];
@@ -44,7 +48,7 @@ class ChunkCache implements ChunkListener{
 					}
 				}
 				unset(self::$instances[$worldId]);
-				\GlobalLogger::get()->debug("Destroyed all player chunk caches for world#$worldId");
+				\GlobalLogger::get()->debug("Destroyed all chunk caches for world#$worldId");
 			});
 		}
 
@@ -52,30 +56,18 @@ class ChunkCache implements ChunkListener{
 			self::$instances[$worldId][$compressorId] = [];
 		}
 
-		if(!isset(self::$instances[$worldId][$compressorId][$playerId])){
-			\GlobalLogger::get()->debug("Created new chunk packet cache (world#$worldId, compressor#$compressorId, player#{$player->getName()})");
-			self::$instances[$worldId][$compressorId][$playerId] = new self($player, $world, $compressor);
+		if(!isset(self::$instances[$worldId][$compressorId][$mappingHash])){
+			\GlobalLogger::get()->debug("Created new chunk packet cache (world#$worldId, compressor#$compressorId, mapping#$mappingHash)");
+			self::$instances[$worldId][$compressorId][$mappingHash] = new self($world, $compressor, $mappings);
 		}
 
-		return self::$instances[$worldId][$compressorId][$playerId];
-	}
-
-	public static function prunePlayerCache(Player $player) : void{
-		$playerId = $player->getId();
-		foreach(self::$instances as $worldId => $compressorMap){
-			foreach($compressorMap as $compressorId => $playerMap){
-				if(isset($playerMap[$playerId])){
-					$playerMap[$playerId]->destroyAll();
-					unset(self::$instances[$worldId][$compressorId][$playerId]);
-				}
-			}
-		}
+		return self::$instances[$worldId][$compressorId][$mappingHash];
 	}
 
 	public static function pruneCaches() : void{
 		foreach(self::$instances as $compressorMap){
-			foreach($compressorMap as $playerMap){
-				foreach($playerMap as $chunkCache){
+			foreach($compressorMap as $mappingMap){
+				foreach($mappingMap as $chunkCache){
 					foreach($chunkCache->caches as $chunkHash => $promise){
 						if(is_string($promise)){
 							unset($chunkCache->caches[$chunkHash]);
@@ -94,9 +86,9 @@ class ChunkCache implements ChunkListener{
 	private int $misses = 0;
 
 	private function __construct(
-		private Player $player,
 		private World $world,
 		private Compressor $compressor,
+		private array $mappings = [],
 		private int $dimensionId = DimensionIds::OVERWORLD
 	){
 	}
@@ -123,7 +115,7 @@ class ChunkCache implements ChunkListener{
 					$chunk,
 					$promise,
 					$this->compressor,
-					$this->player->getBlockMapping()->toArray()
+					$this->mappings
 				)
 			);
 

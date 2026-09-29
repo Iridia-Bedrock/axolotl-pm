@@ -820,8 +820,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 					}
 				}
 
-				ChunkCache::prunePlayerCache($this);
-
 				$this->usedChunks = [];
 				$this->loadQueue = [];
 				$this->getNetworkSession()->onEnterWorld();
@@ -1594,8 +1592,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 					World::getXZ($index, $X, $Z);
 					$this->unloadChunk($X, $Z);
 				}
-
-				ChunkCache::prunePlayerCache($this);
 
 				$this->usedChunks = [];
 				$this->loadQueue = [];
@@ -2481,8 +2477,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		if(count($this->usedChunks) !== 0){
 			throw new AssumptionFailedError("Previous loop should have cleared this array");
 		}
-
-		ChunkCache::prunePlayerCache($this);
 
 		$this->loadQueue = [];
 
