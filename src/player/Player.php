@@ -316,7 +316,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 	protected \Logger $logger;
 
-	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
+	public ?SurvivalBlockBreakHandler $blockBreakHandler = null;
 
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
 		$username = TextFormat::clean($playerInfo->getUsername());
@@ -1561,8 +1561,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 				Timings::$playerCheckNearEntities->stopTiming();
 			}
 
-			if($this->blockBreakHandler !== null && !$this->blockBreakHandler->update()){
-				$this->blockBreakHandler = null;
+			if($this->blockBreakHandler !== null){
+				if($this->blockBreakHandler->getBreakProgress() >= 1) {
+					// If the block break progress is 100% we break the block
+					// This is a hack for custom block
+					$this->breakBlock($this->blockBreakHandler->getBlockPos());
+					$this->blockBreakHandler = null;
+				}
+
+				$this->blockBreakHandler?->update();
 			}
 
 			if($this->isUsingItem() && $this->getItemUseDuration() % 4 === 0 && ($item = $this->inventory->getItemInHand()) instanceof ConsumableItem){
