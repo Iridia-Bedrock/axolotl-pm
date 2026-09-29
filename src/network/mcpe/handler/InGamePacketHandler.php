@@ -434,7 +434,7 @@ class InGamePacketHandler extends PacketHandler{
 			$serverItemStack->getId() !== $clientItemStack->getId() ||
 			$serverItemStack->getMeta() !== $clientItemStack->getMeta() ||
 			$serverItemStack->getCount() !== $clientItemStack->getCount() ||
-			$serverItemStack->getBlockRuntimeId() !== $clientItemStack->getBlockRuntimeId()
+			(($serverItemStack->getBlockRuntimeId() & 0xFFFFFFFF) !== ($clientItemStack->getBlockRuntimeId() & 0xFFFFFFFF))
 			//Raw extraData may not match because of TAG_Compound key ordering differences, and decoding it to compare
 			//is costly. Assume that we're in sync if id+meta+count+runtimeId match.
 			//NB: Make sure $clientItemStack isn't used to create the dropped item, as that would allow the client
