@@ -166,7 +166,8 @@ function main() : void{
 			'generated',
 			'resources',
 			'src',
-			'vendor'
+			'vendor',
+			'axolotl'
 		],
 		[
 			'git' => $gitHash,

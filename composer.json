@@ -68,6 +68,9 @@
          "pocketmine\\": [
             "src/",
             "generated/"
+         ],
+         "axolotl\\": [
+            "axolotl/"
          ]
       },
       "files": [
@@ -77,7 +80,9 @@
    "autoload-dev": {
       "psr-4": {
          "pocketmine\\": "tests/phpunit/",
-         "pocketmine\\phpstan\\rules\\": "tests/phpstan/rules"
+         "axolotl\\": "tests/phpunit/",
+         "pocketmine\\phpstan\\rules\\": "tests/phpstan/rules",
+         "axolotl\\phpstan\\rules\\": "tests/phpstan/rules"
       }
    },
    "config": {
