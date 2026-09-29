@@ -10,4 +10,5 @@ enum PatchType {
 	case ADDITION;
 	case BUGFIX;
 	case OPTIMIZATION;
+	case REWRITE;
 }

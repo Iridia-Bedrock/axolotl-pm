@@ -23,6 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\player;
 
+use axolotl\meta\AxolotlPatch;
+use axolotl\meta\PatchType;
+use axolotl\network\mcpe\cache\ChunkCache;
+use axolotl\player\BlockMappingTrait;
 use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
@@ -174,6 +178,7 @@ use const PHP_INT_MAX;
  */
 class Player extends Human implements CommandSender, ChunkListener, IPlayer, NeverSavedWithChunkEntity{
 	use PermissibleDelegateTrait;
+	use BlockMappingTrait;
 
 	private const MOVES_PER_TICK = 2;
 	private const MOVE_BACKLOG_SIZE = 100 * self::MOVES_PER_TICK; //100 ticks backlog (5 seconds)
@@ -798,6 +803,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 	}
 
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Clears the per-player chunk cache when switching worlds to free up RAM from the previous world.",
+		upstreamVersion: "5.49.2"
+	)]
 	protected function setPosition(Vector3 $pos) : bool{
 		$oldWorld = $this->location->isValid() ? $this->location->getWorld() : null;
 		if(parent::setPosition($pos)){
@@ -809,6 +819,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 						$this->unloadChunk($X, $Z, $oldWorld);
 					}
 				}
+
+				ChunkCache::prunePlayerCache($this);
 
 				$this->usedChunks = [];
 				$this->loadQueue = [];
@@ -1574,6 +1586,22 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 			if($this->isUsingItem() && $this->getItemUseDuration() % 4 === 0 && ($item = $this->inventory->getItemInHand()) instanceof ConsumableItem){
 				$this->broadcastAnimation(new ConsumingItemAnimation($this, $item));
+			}
+
+			$blockMapping = $this->getBlockMapping();
+			if ($blockMapping->isDirty()) {
+				foreach($this->usedChunks as $index => $status){
+					World::getXZ($index, $X, $Z);
+					$this->unloadChunk($X, $Z);
+				}
+
+				ChunkCache::prunePlayerCache($this);
+
+				$this->usedChunks = [];
+				$this->loadQueue = [];
+				$blockMapping->clearDirty();
+
+				$this->orderChunks();
 			}
 		}
 
@@ -2407,6 +2435,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * @param Translatable|string      $reason      Shown in the server log - this should be a short one-line message
 	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Clears the per-player chunk cache to prevent memory leaks when a player disconnects.",
+		upstreamVersion: "5.49.2"
+	)]
 	public function onPostDisconnect(Translatable|string $reason, Translatable|string|null $quitMessage) : void{
 		if($this->isConnected()){
 			throw new \LogicException("Player is still connected");
@@ -2448,6 +2481,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		if(count($this->usedChunks) !== 0){
 			throw new AssumptionFailedError("Previous loop should have cleared this array");
 		}
+
+		ChunkCache::prunePlayerCache($this);
+
 		$this->loadQueue = [];
 
 		$this->removeCurrentWindow();

@@ -83,7 +83,7 @@ final class ChunkSerializer{
 	/**
 	 * @phpstan-param DimensionIds::* $dimensionId
 	 */
-	public static function serializeFullChunk(Chunk $chunk, int $dimensionId, BlockTranslator $blockTranslator, ?string $tiles = null) : string{
+	public static function serializeFullChunk(Chunk $chunk, int $dimensionId, BlockTranslator $blockTranslator, ?string $tiles = null, array $mappings = []) : string{
 		$stream = new ByteBufferWriter();
 
 		$subChunkCount = self::getSubChunkCount($chunk, $dimensionId);
@@ -91,7 +91,7 @@ final class ChunkSerializer{
 
 		[$minSubChunkIndex, $maxSubChunkIndex] = self::getDimensionChunkBounds($dimensionId);
 		for($y = $minSubChunkIndex; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
-			self::serializeSubChunk($chunk->getSubChunk($y), $blockTranslator, $stream, false);
+			self::serializeSubChunk($chunk->getSubChunk($y), $blockTranslator, $stream, false, $mappings);
 		}
 
 		$biomeIdMap = LegacyBiomeIdToStringIdMap::getInstance();
@@ -111,7 +111,7 @@ final class ChunkSerializer{
 		return $stream->getData();
 	}
 
-	public static function serializeSubChunk(SubChunk $subChunk, BlockTranslator $blockTranslator, ByteBufferWriter $stream, bool $persistentBlockStates) : void{
+	public static function serializeSubChunk(SubChunk $subChunk, BlockTranslator $blockTranslator, ByteBufferWriter $stream, bool $persistentBlockStates, array $mappings = []) : void{
 		$layers = $subChunk->getBlockLayers();
 		Byte::writeUnsigned($stream, 8); //version
 
@@ -133,7 +133,7 @@ final class ChunkSerializer{
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){
 					//TODO: introduce a binary cache for this
-					$state = $blockStateDictionary->generateDataFromStateId($blockTranslator->internalIdToNetworkId($p));
+					$state = $blockStateDictionary->generateDataFromStateId($blockTranslator->internalIdToNetworkId($mappings[$p] ?? $p));
 					if($state === null){
 						$state = $blockTranslator->getFallbackStateData();
 					}
@@ -144,7 +144,7 @@ final class ChunkSerializer{
 				//we would use writeSignedIntArray() here, but the gains of writing in batch are negated by the cost of
 				//allocating a temporary array for the mapped palette IDs, especially for small palettes
 				foreach($palette as $p){
-					VarInt::writeSignedInt($stream, $blockTranslator->internalIdToNetworkId($p));
+					VarInt::writeSignedInt($stream, $blockTranslator->internalIdToNetworkId($mappings[$p] ?? $p));
 				}
 			}
 		}

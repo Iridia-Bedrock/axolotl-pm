@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\event\server\LowMemoryEvent;
-use pocketmine\network\mcpe\cache\ChunkCache;
+use axolotl\network\mcpe\cache\ChunkCache;
 use pocketmine\scheduler\DumpWorkerMemoryTask;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
