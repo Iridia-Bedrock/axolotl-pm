@@ -26,7 +26,9 @@ declare(strict_types=1);
  */
 namespace pocketmine\network;
 
-use pocketmine\event\server\NetworkInterfaceRegisterEvent;
+use axolotl\event\server\NetworkInterfaceRegisterEvent;
+use axolotl\meta\AxolotlPatch;
+use axolotl\meta\PatchType;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\utils\Utils;
 use function base64_encode;
@@ -95,10 +97,16 @@ class Network{
 	/**
 	 * @throws NetworkInterfaceStartException
 	 */
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Allow plugins to intercept, modify, or cancel the registration of a network interface.",
+		upstreamVersion: "5.49.2"
+	)]
 	public function registerInterface(NetworkInterface $interface) : bool{
 		$ev = new NetworkInterfaceRegisterEvent($interface);
 		$ev->call();
 		if(!$ev->isCancelled()){
+			$interface = $ev->getInterface();
 			$interface->start();
 			$this->interfaces[$hash = spl_object_id($interface)] = $interface;
 			if($interface instanceof AdvancedNetworkInterface){

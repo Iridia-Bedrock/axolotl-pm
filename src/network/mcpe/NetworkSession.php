@@ -50,7 +50,7 @@ use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\encryption\PrepareEncryptionTask;
 use pocketmine\network\mcpe\handler\DeathPacketHandler;
 use pocketmine\network\mcpe\handler\HandshakePacketHandler;
-use pocketmine\network\mcpe\handler\InGamePacketHandler;
+use axolotl\network\mcpe\handler\InGamePacketHandler;
 use pocketmine\network\mcpe\handler\LoginPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandlerAction;

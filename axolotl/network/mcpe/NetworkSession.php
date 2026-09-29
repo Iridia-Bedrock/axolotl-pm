@@ -7,6 +7,7 @@ namespace axolotl\network\mcpe;
 use axolotl\meta\AxolotlPatch;
 use axolotl\meta\PatchType;
 use axolotl\network\mcpe\convert\TypeConverter;
+use axolotl\utils\Reflection;
 use InvalidArgumentException;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\convert\TypeConverter as TypeConverterPM;
@@ -24,8 +25,9 @@ use UnexpectedValueException;
 
 class NetworkSession extends NetworkSessionPM{
 	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, PacketBroadcaster $broadcaster, EntityEventBroadcaster $entityEventBroadcaster, Compressor $compressor, TypeConverterPM $typeConverter, string $ip, int $port){
-		parent::__construct($server, $manager, $packetPool, $sender, $broadcaster, $entityEventBroadcaster, $compressor, $typeConverter = new TypeConverter(), $ip, $port);
-		$typeConverter->setNetworkSession($this);
+		parent::__construct($server, $manager, $packetPool, $sender, $broadcaster, $entityEventBroadcaster, $compressor, $converter = new TypeConverter(), $ip, $port);
+		Reflection::copyProperties($typeConverter, $converter);
+		$converter->setNetworkSession($this);
 	}
 
 	/**

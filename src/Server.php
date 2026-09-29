@@ -62,7 +62,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
-use pocketmine\network\mcpe\raklib\RakLibInterface;
+use axolotl\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
