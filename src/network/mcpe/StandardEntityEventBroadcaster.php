@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use axolotl\meta\AxolotlPatch;
+use axolotl\meta\PatchType;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
@@ -73,11 +75,16 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 		}
 	}
 
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Inject entity property synchronization instead of sending empty PropertySyncData.",
+		upstreamVersion: "5.49.2"
+	)]
 	public function syncActorData(array $recipients, Entity $entity, array $properties) : void{
 		//TODO: HACK! as of 1.18.10, the client responds differently to the same data ordered in different orders - for
 		//example, sending HEIGHT in the list before FLAGS when unsetting the SWIMMING flag results in a hitbox glitch
 		ksort($properties, SORT_NUMERIC);
-		$this->sendDataPacket($recipients, SetActorDataPacket::create($entity->getId(), $properties, new PropertySyncData([], []), 0));
+		$this->sendDataPacket($recipients, SetActorDataPacket::create($entity->getId(), $properties, $entity->getPropertySyncData(), 0));
 	}
 
 	public function onEntityEffectAdded(array $recipients, Living $entity, EffectInstance $effect, bool $replacesOldEffect) : void{

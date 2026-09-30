@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace axolotl\player;
+namespace axolotl\world;
 
 use pocketmine\block\Block;
 

@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use axolotl\entity\EntityProperties;
+use axolotl\meta\AxolotlPatch;
+use axolotl\meta\PatchType;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
@@ -33,6 +36,7 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerboundLoadingScreenPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
+use pocketmine\network\mcpe\protocol\SyncActorPropertyPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
@@ -63,6 +67,11 @@ class PreSpawnPacketHandler extends PacketHandler{
 		private InventoryManager $inventoryManager
 	){}
 
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Inject entity property synchronization during pre-spawn phase",
+		upstreamVersion: "5.49.2"
+	)]
 	public function setUp() : void{
 		Timings::$playerNetworkSendPreSpawnGameData->startTiming();
 		try{
@@ -103,7 +112,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 				$this->player->getOffsetPosition($location),
 				$location->pitch,
 				$location->yaw,
-				new CacheableNbt(CompoundTag::create()), //TODO: we don't care about this right now
+				EntityProperties::getPlayerPropertyNbt(),
 				$levelSettings,
 				"",
 				$this->server->getMotd(),
@@ -130,6 +139,11 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 			$this->session->getLogger()->debug("Sending actor identifiers");
 			$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
+
+			$this->session->getLogger()->debug("Sending actor properties");
+			foreach(EntityProperties::getEntityPropertyNbt() as $tag){
+				$this->session->sendDataPacket(SyncActorPropertyPacket::create($tag));
+			}
 
 			$this->session->getLogger()->debug("Sending biome definitions");
 			$this->session->sendDataPacket(StaticPacketCache::getInstance()->getBiomeDefs());

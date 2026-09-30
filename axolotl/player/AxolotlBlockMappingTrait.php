@@ -6,8 +6,9 @@ namespace axolotl\player;
 
 use axolotl\meta\AxolotlPatch;
 use axolotl\meta\PatchType;
+use axolotl\world\BlockMapping;
 
-trait BlockMappingTrait{
+trait AxolotlBlockMappingTrait{
 	private ?BlockMapping $blockMapping = null;
 
 	/**

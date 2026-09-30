@@ -26,7 +26,7 @@ namespace pocketmine\player;
 use axolotl\meta\AxolotlPatch;
 use axolotl\meta\PatchType;
 use axolotl\network\mcpe\cache\ChunkCache;
-use axolotl\player\BlockMappingTrait;
+use axolotl\player\AxolotlBlockMappingTrait;
 use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
@@ -178,7 +178,7 @@ use const PHP_INT_MAX;
  */
 class Player extends Human implements CommandSender, ChunkListener, IPlayer, NeverSavedWithChunkEntity{
 	use PermissibleDelegateTrait;
-	use BlockMappingTrait;
+	use AxolotlBlockMappingTrait;
 
 	private const MOVES_PER_TICK = 2;
 	private const MOVE_BACKLOG_SIZE = 100 * self::MOVES_PER_TICK; //100 ticks backlog (5 seconds)

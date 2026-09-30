@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\entity;
 
+use axolotl\entity\AxolotlEntityTrait;
 use pocketmine\block\Block;
 use pocketmine\block\Water;
 use pocketmine\entity\animation\Animation;
@@ -85,6 +86,7 @@ use function spl_object_id;
 use const M_PI_2;
 
 abstract class Entity{
+	use AxolotlEntityTrait;
 
 	public const MOTION_THRESHOLD = 0.00001;
 	protected const STEP_CLIP_MULTIPLIER = 0.4;
@@ -229,6 +231,7 @@ abstract class Entity{
 		$this->lastUpdate = $this->server->getTick();
 
 		$this->scheduleUpdate();
+		$this->axolotlConstruct($location, $nbt);
 	}
 
 	abstract protected function getInitialSizeInfo() : EntitySizeInfo;
@@ -654,6 +657,8 @@ abstract class Entity{
 			$this->sendData(null, $changedProperties);
 			$this->networkProperties->clearDirtyProperties();
 		}
+
+		$this->axolotlEntityBaseTick($tickDiff);
 
 		$hasUpdate = false;
 
