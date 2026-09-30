@@ -26,6 +26,9 @@ declare(strict_types=1);
  */
 namespace pocketmine\item;
 
+use axolotl\item\AxolotlItemTrait;
+use axolotl\meta\AxolotlPatch;
+use axolotl\meta\PatchType;
 use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
@@ -60,6 +63,7 @@ use function morton2d_encode;
 
 class Item implements \JsonSerializable{
 	use ItemEnchantmentHandlingTrait;
+	use AxolotlItemTrait;
 
 	public const TAG_ENCH = "ench";
 	private const TAG_ENCH_ID = "id"; //TAG_Short
@@ -286,6 +290,11 @@ class Item implements \JsonSerializable{
 	/**
 	 * @throws NbtException
 	 */
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Added hook to deserialize custom Axolotl NBT data.",
+		upstreamVersion: "5.49.2"
+	)]
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		$this->customName = "";
 		$this->lore = [];
@@ -335,8 +344,15 @@ class Item implements \JsonSerializable{
 		}
 
 		$this->keepOnDeath = $tag->getByte(self::TAG_KEEP_ON_DEATH, 0) !== 0;
+
+		$this->axolotlDeserializeCompoundTag($tag);
 	}
 
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Added hook to serialize custom Axolotl NBT data.",
+		upstreamVersion: "5.49.2"
+	)]
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
 		$display = $tag->getCompoundTag(self::TAG_DISPLAY);
 
@@ -403,6 +419,8 @@ class Item implements \JsonSerializable{
 		}else{
 			$tag->removeTag(self::TAG_KEEP_ON_DEATH);
 		}
+
+		$this->axolotlSerializeCompoundTag($tag);
 	}
 
 	public function getCount() : int{

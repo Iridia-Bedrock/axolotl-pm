@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use axolotl\item\AxolotlArmorTrait;
+use axolotl\meta\AxolotlPatch;
+use axolotl\meta\PatchType;
 use pocketmine\color\Color;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
@@ -37,6 +40,7 @@ use pocketmine\utils\Utils;
 use function mt_rand;
 
 class Armor extends Durable{
+	use AxolotlArmorTrait;
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
@@ -157,6 +161,11 @@ class Armor extends Durable{
 		return ItemUseResult::SUCCESS;
 	}
 
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Added hook to deserialize custom Axolotl NBT data.",
+		upstreamVersion: "5.49.2"
+	)]
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		parent::deserializeCompoundTag($tag);
 		if(($colorTag = $tag->getTag(self::TAG_CUSTOM_COLOR)) instanceof IntTag){
@@ -164,12 +173,21 @@ class Armor extends Durable{
 		}else{
 			$this->customColor = null;
 		}
+
+		$this->axolotlDeserializeCompoundTag($tag);
 	}
 
+	#[AxolotlPatch(
+		type: PatchType::INJECTION,
+		reason: "Added hook to serialize custom Axolotl NBT data.",
+		upstreamVersion: "5.49.2"
+	)]
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
 		parent::serializeCompoundTag($tag);
 		$this->customColor !== null ?
 			$tag->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customColor->toARGB())) :
 			$tag->removeTag(self::TAG_CUSTOM_COLOR);
+
+		$this->axolotlSerializeCompoundTag($tag);
 	}
 }
