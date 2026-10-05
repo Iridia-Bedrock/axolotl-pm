@@ -26,6 +26,20 @@ class BlockMapping{
 	}
 
 	/**
+	 * @param int $fromStateId
+	 * @param int $toStateId
+	 *
+	 * @return $this
+	 */
+	public function addById(int $fromStateId, int $toStateId) : self{
+		if(($this->mappings[$fromStateId] ?? null) !== $toStateId){
+			$this->mappings[$fromStateId] = $toStateId;
+			$this->dirty = true;
+		}
+		return $this;
+	}
+
+	/**
 	 * @param Block $from
 	 *
 	 * @return $this
@@ -40,14 +54,14 @@ class BlockMapping{
 	}
 
 	/**
-	 * @param int $fromStateId
-	 * @param int $toStateId
+	 * @param array<int, int> $mappings
 	 *
 	 * @return $this
 	 */
-	public function addById(int $fromStateId, int $toStateId) : self{
-		if(($this->mappings[$fromStateId] ?? null) !== $toStateId){
-			$this->mappings[$fromStateId] = $toStateId;
+	public function set(array $mappings) : self{
+		$oldMappings = $this->mappings;
+		$this->mappings = $mappings;
+		if($oldMappings !== $mappings){
 			$this->dirty = true;
 		}
 		return $this;
