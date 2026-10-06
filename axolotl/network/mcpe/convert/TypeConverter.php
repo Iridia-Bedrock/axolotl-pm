@@ -8,11 +8,17 @@ use axolotl\item\ItemWrapper;
 use axolotl\meta\AxolotlPatch;
 use axolotl\meta\PatchType;
 use axolotl\network\mcpe\NetworkSession;
+use pmmp\encoding\ByteBufferWriter;
 use pocketmine\item\Item;
 use pocketmine\lang\Translatable;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\convert\TypeConverter as TypeConverterPM;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraDataShield;
 use pocketmine\player\GameMode;
 
 class TypeConverter extends TypeConverterPM{
@@ -82,41 +88,57 @@ class TypeConverter extends TypeConverterPM{
 		upstreamVersion: "5.49.2"
 	)]
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
-		if($this->networkSession === null || !$this->networkSession->isConnected() || ($player = $this->networkSession->getPlayer()) === null){
+		if($itemStack->isNull() || $this->networkSession === null || !$this->networkSession->isConnected() || ($player = $this->networkSession->getPlayer()) === null){
 			return parent::coreItemStackToNet($itemStack);
 		}
 
-		if(!$itemStack->isNull()){
-			$modified = false;
-			$itemStack = clone $itemStack;
+		$itemStack = clone $itemStack;
 
-			$customName = ItemWrapper::getCustomName($itemStack);
-			if($customName instanceof Translatable){
-				$itemStack->setCustomName($player->getLanguage()->translate($customName));
-				$modified = true;
-			}
+		$customName = ItemWrapper::getCustomName($itemStack);
+		if($customName instanceof Translatable){
+			$itemStack->setCustomName($player->getLanguage()->translate($customName));
+		}
 
-			$lore = ItemWrapper::getLore($itemStack);
-			if(!empty($lore)){
-				$translatedLore = [];
+		$lore = ItemWrapper::getLore($itemStack);
+		if(!empty($lore)){
+			$translatedLore = [];
 
-				foreach($lore as $key => $line){
-					if($line instanceof Translatable){
-						$translatedLore[$key] = $player->getLanguage()->translate($line);
-					}else{
-						$translatedLore[$key] = $line;
-					}
+			foreach($lore as $key => $line){
+				if($line instanceof Translatable){
+					$translatedLore[$key] = $player->getLanguage()->translate($line);
+				}else{
+					$translatedLore[$key] = $line;
 				}
-
-				$itemStack->setLore($translatedLore);
-				$modified = true;
 			}
 
-			if($modified){
-				return parent::coreItemStackToNet($itemStack);
+			$itemStack->setLore($translatedLore);
+		}
+
+		$stack = parent::coreItemStackToNet($itemStack);
+
+		$extraData = $this->deserializeItemStackExtraData($stack->getRawExtraData(), $stack->getId());
+		if ($extraData instanceof ItemStackExtraDataShield){
+			return $stack;
+		}
+
+		$tag = $extraData->getNbt() ?? new CompoundTag();
+		if (ItemWrapper::isFoil($itemStack)){
+			if (!$tag->getTag(Item::TAG_ENCH)){
+				$tag->setTag(Item::TAG_ENCH, new ListTag());
 			}
 		}
 
-		return parent::coreItemStackToNet($itemStack);
+		$extraData = new ItemStackExtraData($tag, $itemStack->getCanPlaceOn(), $itemStack->getCanDestroy());
+
+		$extraDataSerializer = new ByteBufferWriter();
+		$extraData->write($extraDataSerializer);
+
+		return new ItemStack(
+			$stack->getId(),
+			$stack->getMeta(),
+			$stack->getCount(),
+			$stack->getBlockRuntimeId(),
+			$extraDataSerializer->getData(),
+		);
 	}
 }

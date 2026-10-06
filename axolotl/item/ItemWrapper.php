@@ -118,4 +118,30 @@ class ItemWrapper{
 
 		return $lore;
 	}
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public static function isFoil(Item $item) : bool{
+		$namedTag = $item->getNamedTag();
+		return $namedTag->getByte("foil", 0) === 1;
+	}
+
+	/**
+	 * @param Item $item
+	 * @param bool $foil
+	 *
+	 * @return Item
+	 */
+	public static function setFoil(Item $item, bool $foil) : Item{
+		$namedTag = $item->getNamedTag();
+		if($foil){
+			$namedTag->setByte("foil", 1);
+		}else{
+			$namedTag->removeTag("foil");
+		}
+		return $item->setNamedTag($namedTag);
+	}
 }
