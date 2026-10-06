@@ -132,7 +132,7 @@ use function range;
 /**
  * @internal
  */
-final class VanillaBlockMappings{
+class VanillaBlockMappings{
 
 	public static function init(BlockSerializerDeserializerRegistrar $reg) : void{
 		$commonProperties = CommonProperties::getInstance();

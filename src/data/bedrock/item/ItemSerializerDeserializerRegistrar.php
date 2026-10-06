@@ -50,7 +50,7 @@ use pocketmine\item\SuspiciousStew;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\nbt\tag\CompoundTag;
 
-final class ItemSerializerDeserializerRegistrar{
+class ItemSerializerDeserializerRegistrar{
 
 	public function __construct(
 		private ?ItemDeserializer $deserializer,

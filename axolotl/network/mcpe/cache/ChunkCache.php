@@ -17,10 +17,10 @@ use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
 use function is_string;
+use function md5;
+use function serialize;
 use function spl_object_id;
 use function strlen;
-use function serialize;
-use function md5;
 
 #[AxolotlPatch(
 	type: PatchType::REWRITE,
