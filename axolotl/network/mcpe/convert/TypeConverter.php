@@ -87,21 +87,33 @@ class TypeConverter extends TypeConverterPM{
 		}
 
 		if(!$itemStack->isNull()){
-			$lore = ItemWrapper::getLore($itemStack);
+			$modified = false;
+			$itemStack = clone $itemStack;
 
+			$customName = ItemWrapper::getCustomName($itemStack);
+			if($customName instanceof Translatable){
+				$itemStack->setCustomName($player->getLanguage()->translate($customName));
+				$modified = true;
+			}
+
+			$lore = ItemWrapper::getLore($itemStack);
 			if(!empty($lore)){
-				$itemStack = clone $itemStack;
 				$translatedLore = [];
 
-				foreach($lore as $line){
+				foreach($lore as $key => $line){
 					if($line instanceof Translatable){
-						$translatedLore[] = $player->getLanguage()->translate($line);
+						$translatedLore[$key] = $player->getLanguage()->translate($line);
 					}else{
-						$translatedLore[] = $line;
+						$translatedLore[$key] = $line;
 					}
 				}
 
 				$itemStack->setLore($translatedLore);
+				$modified = true;
+			}
+
+			if($modified){
+				return parent::coreItemStackToNet($itemStack);
 			}
 		}
 
