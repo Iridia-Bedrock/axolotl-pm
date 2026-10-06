@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use InvalidArgumentException;
 use pocketmine\utils\Utils;
 
 final class Translatable{
@@ -70,5 +71,65 @@ final class Translatable{
 
 	public function postfix(string $postfix) : self{
 		return new self("%$this->text" . $postfix);
+	}
+
+	/**
+	 * @param Translatable $translatable
+	 * @return array
+	 */
+	public static function serialize(Translatable $translatable): array
+	{
+		$parameters = [];
+		foreach ($translatable->getParameters() as $k => $parameter) {
+			if ($parameter instanceof Translatable) {
+				$parameters[$k] = self::serialize($parameter);
+			} else {
+				$parameters[$k] = $parameter;
+			}
+		}
+
+		return [
+			'text' => $translatable->getText(),
+			'parameters' => $parameters,
+		];
+	}
+
+	/**
+	 * @param array $data
+	 * @return Translatable
+	 * @throws InvalidArgumentException
+	 */
+	public static function deserialize(array $data): Translatable
+	{
+		if (!isset($data['text'])) {
+			throw new InvalidArgumentException("Missing 'text' field in translation data structure.");
+		}
+		if (!is_string($data['text'])) {
+			throw new InvalidArgumentException("The 'text' field in translation data must be a string.");
+		}
+
+		$text = $data['text'];
+		$rawParameters = $data['parameters'] ?? [];
+
+		if (!is_array($rawParameters)) {
+			throw new InvalidArgumentException("The 'parameters' field in translation data must be an array.");
+		}
+
+		$parameters = [];
+		foreach (Utils::promoteKeys($rawParameters) as $k => $param) {
+			if (is_array($param)) {
+				if (!isset($param['text'])) {
+					throw new InvalidArgumentException("Nested translation parameter at key '{$k}' is missing the 'text' field.");
+				}
+				$parameters[$k] = self::deserialize($param);
+			} else {
+				if (is_object($param)) {
+					throw new InvalidArgumentException("Invalid non-scalar parameter type at key '{$k}' in translation data.");
+				}
+				$parameters[$k] = $param;
+			}
+		}
+
+		return new Translatable($text, $parameters);
 	}
 }
