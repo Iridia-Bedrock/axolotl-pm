@@ -294,7 +294,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		if($itemStackRequest !== null){
-			$itemStackResponse = $itemStackResponseBuilder?->build() ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $itemStackRequest->getRequestId(), null);
+			$itemStackResponse = $itemStackResponseBuilder?->build($this->player) ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $itemStackRequest->getRequestId(), null);
 			$this->session->sendDataPacket(ItemStackResponsePacket::create([$itemStackResponse]));
 		}
 
@@ -620,7 +620,7 @@ class InGamePacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Too many requests in ItemStackRequestPacket");
 		}
 		foreach($packet->getRequests() as $request){
-			$responses[] = $this->handleSingleItemStackRequest($request)?->build() ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId(), null);
+			$responses[] = $this->handleSingleItemStackRequest($request)?->build($this->player) ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId(), null);
 		}
 
 		$this->session->sendDataPacket(ItemStackResponsePacket::create($responses));

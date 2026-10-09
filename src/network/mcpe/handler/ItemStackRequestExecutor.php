@@ -417,6 +417,6 @@ class ItemStackRequestExecutor{
 	}
 
 	public function buildItemStackResponse() : ItemStackResponse{
-		return $this->getItemStackResponseBuilder()->build();
+		return $this->getItemStackResponseBuilder()->build(null);
 	}
 }

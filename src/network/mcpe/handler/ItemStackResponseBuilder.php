@@ -23,14 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use axolotl\item\ItemWrapper;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Durable;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\FullContainerName;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseContainerInfo;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseSlotInfo;
+use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 
 final class ItemStackResponseBuilder{
@@ -67,7 +70,7 @@ final class ItemStackResponseBuilder{
 		return [$inventory, $slot];
 	}
 
-	public function build() : ItemStackResponse{
+	public function build(?Player $player) : ItemStackResponse{
 		$responseInfosByContainer = [];
 		foreach($this->changedSlots as $containerInterfaceId => $slotIds){
 			if($containerInterfaceId === ContainerUIIds::CREATED_OUTPUT){
@@ -87,13 +90,21 @@ final class ItemStackResponseBuilder{
 				}
 				$item = $inventory->getItem($slot);
 
+				$customName = $item->getCustomName();
+				if ($player !== null) {
+					$customName = ItemWrapper::getCustomName($item);
+					if($customName instanceof Translatable){
+						$customName = $player->getLanguage()->translate($customName);
+					}
+				}
+
 				$responseInfosByContainer[$containerInterfaceId][] = new ItemStackResponseSlotInfo(
 					$slotId,
 					$slotId,
 					$item->getCount(),
 					$itemStackInfo->getStackId(),
-					$item->getCustomName(),
-					$item->getCustomName(),
+					$customName,
+					$customName,
 					$item instanceof Durable ? $item->getDamage() : 0,
 				);
 			}
