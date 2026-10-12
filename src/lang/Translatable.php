@@ -25,6 +25,9 @@ namespace pocketmine\lang;
 
 use InvalidArgumentException;
 use pocketmine\utils\Utils;
+use function is_array;
+use function is_object;
+use function is_string;
 
 final class Translatable{
 	/** @var string[]|Translatable[] $params */
@@ -73,11 +76,7 @@ final class Translatable{
 		return new self("%$this->text" . $postfix);
 	}
 
-	/**
-	 * @param Translatable $translatable
-	 * @return array
-	 */
-	public static function serialize(Translatable $translatable): array
+	public static function serialize(Translatable $translatable) : array
 	{
 		$parameters = [];
 		foreach ($translatable->getParameters() as $k => $parameter) {
@@ -95,11 +94,9 @@ final class Translatable{
 	}
 
 	/**
-	 * @param array $data
-	 * @return Translatable
 	 * @throws InvalidArgumentException
 	 */
-	public static function deserialize(array $data): Translatable
+	public static function deserialize(array $data) : Translatable
 	{
 		if (!isset($data['text'])) {
 			throw new InvalidArgumentException("Missing 'text' field in translation data structure.");

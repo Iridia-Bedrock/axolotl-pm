@@ -37,6 +37,8 @@ use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\world\particle\BlockPunchParticle;
 use pocketmine\world\sound\BlockPunchSound;
 use function abs;
+use function max;
+use function pow;
 
 final class SurvivalBlockBreakHandler{
 

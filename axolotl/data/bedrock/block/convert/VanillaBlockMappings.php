@@ -229,6 +229,13 @@ class VanillaBlockMappings extends VanillaBlockMappingsPM {
 			new BoolProperty(StateNames::NATURAL, fn(CreakingHeart $b) => $b->isNatural(), fn(CreakingHeart $b, bool $v) => $b->setNatural($v)),
 			new ValueFromStringProperty(StateNames::CREAKING_HEART_STATE, EnumFromRawStateMap::string(CreakingHeartState::class, fn(CreakingHeartState $state) => strtolower($state->name)), fn(CreakingHeart $b) => $b->getCreakingHeartState(), fn(CreakingHeart $b, CreakingHeartState $v) => $b->setCreakingHeartState($v))
 		]));
+		$reg->mapSimple(Blocks::RED_SHRUB(), Ids::RED_SHRUB);
+
+		$reg->mapColoredSlab(Blocks::WOOL_SLAB(), "wool");
+		$reg->mapColoredStairs(Blocks::WOOL_STAIRS(), "wool");
+
+		$reg->mapColoredSlab(Blocks::CONCRETE_SLAB(), "concrete");
+		$reg->mapColoredStairs(Blocks::CONCRETE_STAIRS(), "concrete");
 
 		/*foreach(DyeColor::cases() as $color){
 			$idName = fn(string $suffix) => strtolower($color->name) . "_$suffix";

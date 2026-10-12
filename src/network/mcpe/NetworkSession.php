@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use axolotl\network\mcpe\cache\ChunkCache;
+use axolotl\network\mcpe\handler\InGamePacketHandler;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\DataDecodeException;
@@ -40,7 +42,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\FilterNoisyPacketException;
-use axolotl\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\DecompressionException;
@@ -50,7 +51,6 @@ use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\encryption\PrepareEncryptionTask;
 use pocketmine\network\mcpe\handler\DeathPacketHandler;
 use pocketmine\network\mcpe\handler\HandshakePacketHandler;
-use axolotl\network\mcpe\handler\InGamePacketHandler;
 use pocketmine\network\mcpe\handler\LoginPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandlerAction;

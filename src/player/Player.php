@@ -25,7 +25,6 @@ namespace pocketmine\player;
 
 use axolotl\meta\AxolotlPatch;
 use axolotl\meta\PatchType;
-use axolotl\network\mcpe\cache\ChunkCache;
 use axolotl\player\AxolotlBlockMappingTrait;
 use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;

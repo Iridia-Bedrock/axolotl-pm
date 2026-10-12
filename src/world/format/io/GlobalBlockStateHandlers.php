@@ -28,7 +28,6 @@ use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\data\bedrock\block\convert\BlockObjectToStateSerializer;
 use pocketmine\data\bedrock\block\convert\BlockSerializerDeserializerRegistrar;
 use pocketmine\data\bedrock\block\convert\BlockStateToObjectDeserializer;
-use pocketmine\data\bedrock\block\convert\VanillaBlockMappings;
 use pocketmine\data\bedrock\block\upgrade\BlockDataUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockIdMetaUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;

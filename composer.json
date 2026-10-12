@@ -53,6 +53,7 @@
       "symfony/filesystem": "~6.4.0"
    },
    "require-dev": {
+      "friendsofphp/php-cs-fixer": "^3.95",
       "phpstan/phpstan": "2.1.46",
       "phpstan/phpstan-phpunit": "^2.0.0",
       "phpstan/phpstan-strict-rules": "^2.0.0",
@@ -94,8 +95,12 @@
    "scripts": {
       "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/ConsoleScript.php --make ./ --relative tests/plugins/DevTools --out plugins/DevTools.phar",
       "make-server": [
-         "@composer install --no-dev --classmap-authoritative --ignore-platform-reqs",
+         "@composer install --classmap-authoritative --ignore-platform-reqs",
          "@php -dphar.readonly=0 build/server-phar.php"
+      ],
+      "csfixer": [
+         "@composer install --classmap-authoritative --ignore-platform-reqs",
+         "./vendor/bin/php-cs-fixer fix -v"
       ],
       "update-codegen": [
          "@php build/codegen/bedrockdata-path-consts.php",
@@ -104,7 +109,8 @@
          "@php build/codegen/item-type-names.php vendor/axolotl-pm/bedrock-data/required_item_list.json",
          "@php build/codegen/known-translation-apis.php",
          "@php build/codegen/pocketmine-yml-property-consts.php",
-         "@php build/codegen/registry-interface.php src generated"
+         "@php build/codegen/registry-interface.php src generated",
+         "@php build/codegen/registry-interface.php axolotl axolotl"
       ]
    }
 }

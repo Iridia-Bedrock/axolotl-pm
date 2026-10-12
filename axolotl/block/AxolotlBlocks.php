@@ -53,6 +53,8 @@ final class AxolotlBlocks{
 	private static ClosedEyeblossom $_mCLOSED_EYEBLOSSOM;
 	private static CommandBlock $_mCOMMAND_BLOCK;
 	private static Composter $_mCOMPOSTER;
+	private static ConcreteSlab $_mCONCRETE_SLAB;
+	private static ConcreteStair $_mCONCRETE_STAIRS;
 	private static Conduit $_mCONDUIT;
 	private static Chest $_mCOPPER_CHEST;
 	private static CopperGolem $_mCOPPER_GOLEM_STATUE;
@@ -90,6 +92,7 @@ final class AxolotlBlocks{
 	private static PaleMossCarpet $_mPALE_MOSS_CARPET;
 	private static PointedDripstone $_mPOINTED_DRIPSTONE;
 	private static PowderSnow $_mPOWDER_SNOW;
+	private static RedShrub $_mRED_SHRUB;
 	private static CommandBlock $_mREPEATING_COMMAND_BLOCK;
 	private static Scaffolding $_mSCAFFOLDING;
 	private static SculkCatalyst $_mSCULK_CATALYST;
@@ -117,6 +120,8 @@ final class AxolotlBlocks{
 	private static Chest $_mWEATHERED_COPPER_CHEST;
 	private static CopperGolem $_mWEATHERED_COPPER_GOLEM_STATUE;
 	private static Flower $_mWILDFLOWERS;
+	private static WoolSlab $_mWOOL_SLAB;
+	private static WoolStair $_mWOOL_STAIRS;
 
 	/**
 	 * @var Block[]
@@ -159,6 +164,8 @@ final class AxolotlBlocks{
 			"closed_eyeblossom" => fn(ClosedEyeblossom $v) => self::$_mCLOSED_EYEBLOSSOM = $v,
 			"command_block" => fn(CommandBlock $v) => self::$_mCOMMAND_BLOCK = $v,
 			"composter" => fn(Composter $v) => self::$_mCOMPOSTER = $v,
+			"concrete_slab" => fn(ConcreteSlab $v) => self::$_mCONCRETE_SLAB = $v,
+			"concrete_stairs" => fn(ConcreteStair $v) => self::$_mCONCRETE_STAIRS = $v,
 			"conduit" => fn(Conduit $v) => self::$_mCONDUIT = $v,
 			"copper_chest" => fn(Chest $v) => self::$_mCOPPER_CHEST = $v,
 			"copper_golem_statue" => fn(CopperGolem $v) => self::$_mCOPPER_GOLEM_STATUE = $v,
@@ -196,6 +203,7 @@ final class AxolotlBlocks{
 			"pale_moss_carpet" => fn(PaleMossCarpet $v) => self::$_mPALE_MOSS_CARPET = $v,
 			"pointed_dripstone" => fn(PointedDripstone $v) => self::$_mPOINTED_DRIPSTONE = $v,
 			"powder_snow" => fn(PowderSnow $v) => self::$_mPOWDER_SNOW = $v,
+			"red_shrub" => fn(RedShrub $v) => self::$_mRED_SHRUB = $v,
 			"repeating_command_block" => fn(CommandBlock $v) => self::$_mREPEATING_COMMAND_BLOCK = $v,
 			"scaffolding" => fn(Scaffolding $v) => self::$_mSCAFFOLDING = $v,
 			"sculk_catalyst" => fn(SculkCatalyst $v) => self::$_mSCULK_CATALYST = $v,
@@ -223,6 +231,8 @@ final class AxolotlBlocks{
 			"weathered_copper_chest" => fn(Chest $v) => self::$_mWEATHERED_COPPER_CHEST = $v,
 			"weathered_copper_golem_statue" => fn(CopperGolem $v) => self::$_mWEATHERED_COPPER_GOLEM_STATUE = $v,
 			"wildflowers" => fn(Flower $v) => self::$_mWILDFLOWERS = $v,
+			"wool_slab" => fn(WoolSlab $v) => self::$_mWOOL_SLAB = $v,
+			"wool_stairs" => fn(WoolStair $v) => self::$_mWOOL_STAIRS = $v,
 		];
 	}
 
@@ -299,6 +309,16 @@ final class AxolotlBlocks{
 	public static function COMPOSTER() : Composter{
 		if(!isset(self::$_mCOMPOSTER)){ self::init(); }
 		return clone self::$_mCOMPOSTER;
+	}
+
+	public static function CONCRETE_SLAB() : ConcreteSlab{
+		if(!isset(self::$_mCONCRETE_SLAB)){ self::init(); }
+		return clone self::$_mCONCRETE_SLAB;
+	}
+
+	public static function CONCRETE_STAIRS() : ConcreteStair{
+		if(!isset(self::$_mCONCRETE_STAIRS)){ self::init(); }
+		return clone self::$_mCONCRETE_STAIRS;
 	}
 
 	public static function CONDUIT() : Conduit{
@@ -486,6 +506,11 @@ final class AxolotlBlocks{
 		return clone self::$_mPOWDER_SNOW;
 	}
 
+	public static function RED_SHRUB() : RedShrub{
+		if(!isset(self::$_mRED_SHRUB)){ self::init(); }
+		return clone self::$_mRED_SHRUB;
+	}
+
 	public static function REPEATING_COMMAND_BLOCK() : CommandBlock{
 		if(!isset(self::$_mREPEATING_COMMAND_BLOCK)){ self::init(); }
 		return clone self::$_mREPEATING_COMMAND_BLOCK;
@@ -619,5 +644,15 @@ final class AxolotlBlocks{
 	public static function WILDFLOWERS() : Flower{
 		if(!isset(self::$_mWILDFLOWERS)){ self::init(); }
 		return clone self::$_mWILDFLOWERS;
+	}
+
+	public static function WOOL_SLAB() : WoolSlab{
+		if(!isset(self::$_mWOOL_SLAB)){ self::init(); }
+		return clone self::$_mWOOL_SLAB;
+	}
+
+	public static function WOOL_STAIRS() : WoolStair{
+		if(!isset(self::$_mWOOL_STAIRS)){ self::init(); }
+		return clone self::$_mWOOL_STAIRS;
 	}
 }
