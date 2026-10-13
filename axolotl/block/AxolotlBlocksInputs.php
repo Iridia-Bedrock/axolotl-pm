@@ -69,13 +69,14 @@ class AxolotlBlocksInputs extends RegistrySource{
 	/**
 	 * @phpstan-template TBlock of Block
 	 * @phpstan-param \Closure(BID) : TBlock $createBlock
-	 * @phpstan-param class-string<covariant Tile> $tileClass
+	 * @phpstan-param class-string<covariant Tile>|null $tileClass
 	 */
 	private function register(string $name, \Closure $createBlock, ?string $tileClass = null) : void{
 		$type = (new \ReflectionFunction($createBlock))->getReturnType()?->getName() ?? Block::class;
-		self::registerDelayed($name, eval("return function (string \$name) : $type {
+
+		self::registerDelayed($name, eval("return function (string \$name) use(\$createBlock, \$tileClass) : $type {
 			\$block = \$createBlock(self::makeBID(\$name, \$tileClass));
-			StringToItemParser::getInstance()->registerBlock(\$name, fn() => \$block);
+			\pocketmine\item\StringToItemParser::getInstance()->registerBlock(\$name, fn() => \$block);
 
 			return \$block;
 		};"));
