@@ -905,7 +905,11 @@ final class BlockTypeIds{
 	public const ORANGE_POPLAR_LEAVES = 10873;
 	public const YELLOW_POPLAR_LEAVES = 10874;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10875;
+	public const POPLAR_CEILING_CENTER_HANGING_SIGN = 10875;
+	public const POPLAR_CEILING_EDGES_HANGING_SIGN = 10876;
+	public const POPLAR_WALL_HANGING_SIGN = 10877;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10878;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
