@@ -54,6 +54,7 @@ enum WoodType{
 	case WARPED;
 	case CHERRY;
 	case PALE_OAK;
+	case POPLAR;
 	case BAMBOO;
 
 	public function getDisplayName() : string{
@@ -69,6 +70,7 @@ enum WoodType{
 			self::WARPED => "Warped",
 			self::CHERRY => "Cherry",
 			self::PALE_OAK => "Pale Oak",
+			self::POPLAR => "Poplar",
 			self::BAMBOO => "Bamboo",
 		};
 	}
