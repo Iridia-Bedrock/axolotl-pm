@@ -614,6 +614,7 @@ final class VanillaBlocks{
 	private static Opaque $_mOBSIDIAN;
 	private static OminousFloorBanner $_mOMINOUS_BANNER;
 	private static OminousWallBanner $_mOMINOUS_WALL_BANNER;
+	private static Leaves $_mORANGE_POPLAR_LEAVES;
 	private static Flower $_mORANGE_TULIP;
 	private static Flower $_mOXEYE_DAISY;
 	private static PackedIce $_mPACKED_ICE;
@@ -734,6 +735,7 @@ final class VanillaBlocks{
 	private static Slab $_mRED_NETHER_BRICK_SLAB;
 	private static Stair $_mRED_NETHER_BRICK_STAIRS;
 	private static Wall $_mRED_NETHER_BRICK_WALL;
+	private static Leaves $_mRED_POPLAR_LEAVES;
 	private static Sand $_mRED_SAND;
 	private static Opaque $_mRED_SANDSTONE;
 	private static Slab $_mRED_SANDSTONE_SLAB;
@@ -884,6 +886,7 @@ final class VanillaBlocks{
 	private static Flower $_mWHITE_TULIP;
 	private static WitherRose $_mWITHER_ROSE;
 	private static Wool $_mWOOL;
+	private static Leaves $_mYELLOW_POPLAR_LEAVES;
 
 	/**
 	 * @var Block[]
@@ -1494,6 +1497,7 @@ final class VanillaBlocks{
 			"obsidian" => fn(Opaque $v) => self::$_mOBSIDIAN = $v,
 			"ominous_banner" => fn(OminousFloorBanner $v) => self::$_mOMINOUS_BANNER = $v,
 			"ominous_wall_banner" => fn(OminousWallBanner $v) => self::$_mOMINOUS_WALL_BANNER = $v,
+			"orange_poplar_leaves" => fn(Leaves $v) => self::$_mORANGE_POPLAR_LEAVES = $v,
 			"orange_tulip" => fn(Flower $v) => self::$_mORANGE_TULIP = $v,
 			"oxeye_daisy" => fn(Flower $v) => self::$_mOXEYE_DAISY = $v,
 			"packed_ice" => fn(PackedIce $v) => self::$_mPACKED_ICE = $v,
@@ -1614,6 +1618,7 @@ final class VanillaBlocks{
 			"red_nether_brick_slab" => fn(Slab $v) => self::$_mRED_NETHER_BRICK_SLAB = $v,
 			"red_nether_brick_stairs" => fn(Stair $v) => self::$_mRED_NETHER_BRICK_STAIRS = $v,
 			"red_nether_brick_wall" => fn(Wall $v) => self::$_mRED_NETHER_BRICK_WALL = $v,
+			"red_poplar_leaves" => fn(Leaves $v) => self::$_mRED_POPLAR_LEAVES = $v,
 			"red_sand" => fn(Sand $v) => self::$_mRED_SAND = $v,
 			"red_sandstone" => fn(Opaque $v) => self::$_mRED_SANDSTONE = $v,
 			"red_sandstone_slab" => fn(Slab $v) => self::$_mRED_SANDSTONE_SLAB = $v,
@@ -1764,6 +1769,7 @@ final class VanillaBlocks{
 			"white_tulip" => fn(Flower $v) => self::$_mWHITE_TULIP = $v,
 			"wither_rose" => fn(WitherRose $v) => self::$_mWITHER_ROSE = $v,
 			"wool" => fn(Wool $v) => self::$_mWOOL = $v,
+			"yellow_poplar_leaves" => fn(Leaves $v) => self::$_mYELLOW_POPLAR_LEAVES = $v,
 		];
 	}
 
@@ -4682,6 +4688,11 @@ final class VanillaBlocks{
 		return clone self::$_mOMINOUS_WALL_BANNER;
 	}
 
+	public static function ORANGE_POPLAR_LEAVES() : Leaves{
+		if(!isset(self::$_mORANGE_POPLAR_LEAVES)){ self::init(); }
+		return clone self::$_mORANGE_POPLAR_LEAVES;
+	}
+
 	public static function ORANGE_TULIP() : Flower{
 		if(!isset(self::$_mORANGE_TULIP)){ self::init(); }
 		return clone self::$_mORANGE_TULIP;
@@ -5280,6 +5291,11 @@ final class VanillaBlocks{
 	public static function RED_NETHER_BRICK_WALL() : Wall{
 		if(!isset(self::$_mRED_NETHER_BRICK_WALL)){ self::init(); }
 		return clone self::$_mRED_NETHER_BRICK_WALL;
+	}
+
+	public static function RED_POPLAR_LEAVES() : Leaves{
+		if(!isset(self::$_mRED_POPLAR_LEAVES)){ self::init(); }
+		return clone self::$_mRED_POPLAR_LEAVES;
 	}
 
 	public static function RED_SAND() : Sand{
@@ -6030,5 +6046,10 @@ final class VanillaBlocks{
 	public static function WOOL() : Wool{
 		if(!isset(self::$_mWOOL)){ self::init(); }
 		return clone self::$_mWOOL;
+	}
+
+	public static function YELLOW_POPLAR_LEAVES() : Leaves{
+		if(!isset(self::$_mYELLOW_POPLAR_LEAVES)){ self::init(); }
+		return clone self::$_mYELLOW_POPLAR_LEAVES;
 	}
 }
