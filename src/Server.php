@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use axolotl\Axolotl;
-use axolotl\network\mcpe\raklib\RakLibInterface;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\SimpleCommandMap;
@@ -63,6 +62,7 @@ use pocketmine\network\mcpe\nethernet\NetherNetTransport;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
+use pocketmine\network\mcpe\raklib\RakLibTransport;
 use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;

@@ -19,13 +19,14 @@ use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\network\PacketHandlingException;
+use pocketmine\network\TransportIdentityKey;
 use pocketmine\Server;
 use Throwable;
 use UnexpectedValueException;
 
 class NetworkSession extends NetworkSessionPM{
-	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, PacketBroadcaster $broadcaster, EntityEventBroadcaster $entityEventBroadcaster, Compressor $compressor, TypeConverterPM $typeConverter, string $ip, int $port){
-		parent::__construct($server, $manager, $packetPool, $sender, $broadcaster, $entityEventBroadcaster, $compressor, $converter = (new \ReflectionClass(TypeConverter::class))->newInstanceWithoutConstructor(), $ip, $port);
+	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, PacketBroadcaster $broadcaster, EntityEventBroadcaster $entityEventBroadcaster, Compressor $compressor, TypeConverterPM $typeConverter, string $ip, int $port, ?TransportIdentityKey $transportIdentityKey = null, bool $transportEncrypted = false){
+		parent::__construct($server, $manager, $packetPool, $sender, $broadcaster, $entityEventBroadcaster, $compressor, $converter = (new \ReflectionClass(TypeConverter::class))->newInstanceWithoutConstructor(), $ip, $port, $transportIdentityKey, $transportEncrypted);
 		Reflection::copyProperties($typeConverter, $converter);
 		$converter->setNetworkSession($this);
 	}

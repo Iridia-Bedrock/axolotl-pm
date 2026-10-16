@@ -41,14 +41,14 @@ class TypeConverter extends TypeConverterPM{
 	/**
 	 * @param GameMode $gamemode
 	 *
-	 * @return int
+	 * @return ProtocolGameMode
 	 */
 	#[AxolotlPatch(
 		type: PatchType::OVERRIDE,
 		reason: "Properly maps the core Spectator game mode to the client protocol instead of falling back to a creative viewer.",
 		upstreamVersion: "5.49.2"
 	)]
-	public function coreGameModeToProtocol(GameMode $gamemode) : int{
+	public function coreGameModeToProtocol(GameMode $gamemode) : ProtocolGameMode{
 		return match ($gamemode) {
 			GameMode::SURVIVAL => ProtocolGameMode::SURVIVAL,
 			GameMode::SPECTATOR => ProtocolGameMode::SPECTATOR,
@@ -58,7 +58,7 @@ class TypeConverter extends TypeConverterPM{
 	}
 
 	/**
-	 * @param int $gameMode
+	 * @param ProtocolGameMode $gameMode
 	 *
 	 * @return GameMode|null
 	 */
@@ -67,7 +67,7 @@ class TypeConverter extends TypeConverterPM{
 		reason: "Properly maps client spectator protocol game modes back to the core Spectator game mode.",
 		upstreamVersion: "5.49.2"
 	)]
-	public function protocolGameModeToCore(int $gameMode) : ?GameMode{
+	public function protocolGameModeToCore(ProtocolGameMode $gameMode) : ?GameMode{
 		return match ($gameMode) {
 			ProtocolGameMode::SURVIVAL => GameMode::SURVIVAL,
 			ProtocolGameMode::CREATIVE => GameMode::CREATIVE,
