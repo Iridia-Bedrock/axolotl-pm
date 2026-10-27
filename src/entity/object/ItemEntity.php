@@ -42,6 +42,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use function max;
+use function mt_rand;
 
 class ItemEntity extends Entity{
 
@@ -339,7 +340,7 @@ class ItemEntity extends Entity{
 		$this->pickupTargetTick = $currentTick;
 		$this->pickupTargetId = null;
 
-		/** @var list<array{distance: float, player: Player}> $candidates */
+		/** @var list<Player> $candidates */
 		$candidates = [];
 		foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(1, 0.5, 1), $this) as $entity){
 			if(!$entity instanceof Player || !$entity->isAlive() || $entity->isFlaggedForDespawn() || !$this->canBePickedUpBy($entity)){
@@ -350,32 +351,15 @@ class ItemEntity extends Entity{
 				continue;
 			}
 
-			$candidates[] = [
-				'distance' => $entity->getPosition()->distanceSquared($this->location),
-				'player' => $entity,
-			];
+			$candidates[] = $entity;
 		}
 
 		if($candidates === []){
 			return null;
 		}
 
-		$nearestDistance = INF;
-		foreach($candidates as $candidate){
-			$nearestDistance = min($nearestDistance, $candidate['distance']);
-		}
-
-		/** @var list<array{distance: float, player: Player}> $nearest */
-		$nearest = [];
-		foreach($candidates as $candidate){
-			if(abs($candidate['distance'] - $nearestDistance) < 1.0e-6){
-				$nearest[] = $candidate;
-			}
-		}
-
-		usort($nearest, static fn(array $a, array $b) : int => strcmp($a['player']->getUniqueId()->getBytes(), $b['player']->getUniqueId()->getBytes()));
-
-		$target = $nearest[$this->getId() % count($nearest)]['player'];
+		//Nearby entities are returned in insertion order, so don't let that decide who gets the item.
+		$target = $candidates[mt_rand(0, count($candidates) - 1)];
 		$this->pickupTargetId = $target->getId();
 
 		return $target;
