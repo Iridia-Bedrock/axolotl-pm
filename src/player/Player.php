@@ -979,6 +979,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->noDamageTicks = 60;
 
 		$this->spawnToAll();
+		$this->server->getUpdater()->notifyPlayer($this);
 
 		if($this->getHealth() <= 0){
 			$this->logger->debug("Quit while dead, forcing respawn");

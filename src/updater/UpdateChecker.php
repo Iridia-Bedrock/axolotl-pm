@@ -24,11 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\updater;
 
 use pocketmine\event\server\UpdateNotifyEvent;
+use pocketmine\player\Player;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
 use pocketmine\YmlServerProperties;
 use function date;
+use function substr;
 use function strtolower;
 use function ucfirst;
 
@@ -37,6 +40,7 @@ class UpdateChecker{
 	protected Server $server;
 	protected string $endpoint;
 	protected ?UpdateInfo $updateInfo = null;
+	private bool $developmentCommitUpdate = false;
 	private \Logger $logger;
 
 	public function __construct(Server $server, string $endpoint){
@@ -63,6 +67,11 @@ class UpdateChecker{
 			if($this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_UPDATER_ON_UPDATE_WARN_CONSOLE, true)){
 				$this->showConsoleUpdate();
 			}
+			if($this->developmentCommitUpdate){
+				foreach($this->server->getOnlinePlayers() as $player){
+					$this->notifyPlayer($player);
+				}
+			}
 		}else{
 			if(!VersionInfo::IS_DEVELOPMENT_BUILD && $this->getChannel() !== "stable"){
 				$this->showChannelSuggestionStable();
@@ -86,15 +95,36 @@ class UpdateChecker{
 		if($this->updateInfo === null){
 			return;
 		}
-		$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
-		$messages = [
-			"Your version of " . $this->server->getName() . " is out of date. Version " . $newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo->date)
-		];
+		if($this->developmentCommitUpdate){
+			$messages = [
+				"Your development/debug build of " . $this->server->getName() . " is out of date. A newer commit is available.",
+				"Current commit: " . substr(VersionInfo::GIT_HASH(), 0, 12),
+				"Latest commit: " . substr($this->updateInfo->git_commit, 0, 12),
+			];
+		}else{
+			$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
+			$messages = [
+				"Your version of " . $this->server->getName() . " is out of date. Version " . $newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo->date)
+			];
+		}
 
-		$messages[] = "Details: " . $this->updateInfo->details_url;
-		$messages[] = "Download: " . $this->updateInfo->download_url;
+		if($this->developmentCommitUpdate){
+			$messages[] = "Please download the latest PHAR: " . $this->updateInfo->download_url;
+		}else{
+			$messages[] = "Details: " . $this->updateInfo->details_url;
+			$messages[] = "Download: " . $this->updateInfo->download_url;
+		}
 
 		$this->printConsoleMessage($messages, \LogLevel::WARNING);
+	}
+
+	public function notifyPlayer(Player $player) : void{
+		if(!$this->developmentCommitUpdate || $this->updateInfo === null || !$this->server->isOp($player->getName())){
+			return;
+		}
+
+		$player->sendMessage(TextFormat::YELLOW . "[Update Checker] A newer development/debug PHAR is available.");
+		$player->sendMessage(TextFormat::YELLOW . "Please update it: " . $this->updateInfo->download_url);
 	}
 
 	protected function showChannelSuggestionStable() : void{
@@ -147,9 +177,15 @@ class UpdateChecker{
 			return;
 		}
 
-		if($currentVersion->getBuild() > 0 && $currentVersion->compare($newVersion) > 0){
+		$this->developmentCommitUpdate =
+			VersionInfo::IS_DEVELOPMENT_BUILD &&
+			\Phar::running(true) !== "" &&
+			VersionInfo::GIT_HASH() !== $updateInfo->git_commit;
+
+		if(($currentVersion->getBuild() > 0 && $currentVersion->compare($newVersion) > 0) || $this->developmentCommitUpdate){
 			$this->updateInfo = $updateInfo;
 		}else{
+			$this->developmentCommitUpdate = false;
 			$this->logger->debug("API reported version is an older version or the same version (" . $newVersion->getFullVersion() . "), not showing notification");
 		}
 	}
