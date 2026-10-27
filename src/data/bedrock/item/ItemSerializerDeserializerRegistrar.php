@@ -23,10 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item;
 
+use axolotl\item\AxolotlItems as ItemsAxolotl;
+use axolotl\item\OminousBottle;
+use axolotl\item\PotterySherdType;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\CopperDoor;
 use pocketmine\block\tile\Banner as TileBanner;
+use pocketmine\block\utils\BannerPatternType;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks as Blocks;
@@ -48,6 +52,7 @@ use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\SuspiciousStew;
 use pocketmine\item\VanillaItems as Items;
+use pocketmine\item\BoatType;
 use pocketmine\nbt\tag\CompoundTag;
 
 class ItemSerializerDeserializerRegistrar{
@@ -63,6 +68,7 @@ class ItemSerializerDeserializerRegistrar{
 		$this->register1ToNItemMappings();
 		$this->registerMiscBlockMappings();
 		$this->registerMiscItemMappings();
+		$this->registerAxolotlItemMappings();
 	}
 
 	public function map1to1Item(string $id, Item $item) : void{
@@ -628,5 +634,85 @@ class ItemSerializerDeserializerRegistrar{
 			$this->deserializer?->mapBlock($id, fn() => Blocks::COPPER_DOOR()->setOxidation($oxidation)->setWaxed($waxed));
 		}
 		$this->serializer?->mapBlock(Blocks::COPPER_DOOR(), fn(CopperDoor $block) => new Data($copperDoorStateIdMap[$block->getOxidation()->value][$block->isWaxed() ? 1 : 0]));
+	}
+
+	private function registerAxolotlItemMappings() : void{
+		$this->map1to1Item(Ids::MACE, ItemsAxolotl::MACE());
+		$this->map1to1Item(Ids::SHIELD, ItemsAxolotl::SHIELD());
+		$this->map1to1Item(Ids::CARROT_ON_A_STICK, ItemsAxolotl::CARROT_ON_A_STICK());
+		$this->map1to1Item(Ids::WARPED_FUNGUS_ON_A_STICK, ItemsAxolotl::WARPED_FUNGUS_ON_A_STICK());
+		$this->map1to1Item(Ids::WIND_CHARGE, ItemsAxolotl::WIND_CHARGE());
+		$this->map1to1Item(Ids::LEAD, ItemsAxolotl::LEAD());
+		$this->map1to1Item(Ids::EMPTY_MAP, ItemsAxolotl::EMPTY_MAP());
+		$this->map1to1Item("minecraft:empty_locator_map", ItemsAxolotl::EMPTY_LOCATOR_MAP());
+		$this->map1to1Item(Ids::SADDLE, ItemsAxolotl::SADDLE());
+		$this->map1to1Item(Ids::WOLF_ARMOR, ItemsAxolotl::WOLF_ARMOR());
+		$this->map1to1Item(Ids::ELYTRA, ItemsAxolotl::ELYTRA());
+		$this->map1to1Item(Ids::BRUSH, ItemsAxolotl::BRUSH());
+
+		$this->map1to1Item(Ids::BUNDLE, ItemsAxolotl::BUNDLE());
+		foreach(DyeColor::cases() as $color){
+			$key = strtolower($color->name);
+			$this->map1to1Item("minecraft:" . $key . "_harness", ItemsAxolotl::{$color->name . "_HARNESS"}());
+			$this->map1to1Item("minecraft:" . $key . "_bundle", ItemsAxolotl::{$color->name . "_BUNDLE"}());
+		}
+
+		foreach([
+			Ids::LEATHER_HORSE_ARMOR,
+			Ids::COPPER_HORSE_ARMOR,
+			Ids::IRON_HORSE_ARMOR,
+			Ids::GOLDEN_HORSE_ARMOR,
+			Ids::DIAMOND_HORSE_ARMOR,
+			Ids::NETHERITE_HORSE_ARMOR,
+
+			Ids::COPPER_NAUTILUS_ARMOR,
+			Ids::IRON_NAUTILUS_ARMOR,
+			Ids::GOLDEN_NAUTILUS_ARMOR,
+			Ids::DIAMOND_NAUTILUS_ARMOR,
+			Ids::NETHERITE_NAUTILUS_ARMOR,
+		] as $id){
+			$this->map1to1Item($id, ItemsAxolotl::{str_replace("minecraft:", "", $id)}());
+		}
+
+		$this->map1to1ItemWithMeta(
+			Ids::OMINOUS_BOTTLE,
+			ItemsAxolotl::OMINOUS_BOTTLE(),
+			fn(OminousBottle $item, int $meta) => $item->setAmplifier($meta),
+			fn(OminousBottle $item) => $item->getAmplifier()
+		);
+
+		$this->map1to1Item(Ids::COD_BUCKET, ItemsAxolotl::COD_BUCKET());
+		$this->map1to1Item(Ids::SALMON_BUCKET, ItemsAxolotl::SALMON_BUCKET());
+		$this->map1to1Item(Ids::TROPICAL_FISH_BUCKET, ItemsAxolotl::TROPICAL_FISH_BUCKET());
+		$this->map1to1Item(Ids::PUFFERFISH_BUCKET, ItemsAxolotl::PUFFERFISH_BUCKET());
+		$this->map1to1Item(Ids::AXOLOTL_BUCKET, ItemsAxolotl::AXOLOTL_BUCKET());
+		$this->map1to1Item(Ids::TADPOLE_BUCKET, ItemsAxolotl::TADPOLE_BUCKET());
+		$this->map1to1Item(Ids::POWDER_SNOW_BUCKET, ItemsAxolotl::POWDER_SNOW_BUCKET());
+
+		$this->map1to1Item(Ids::ARMOR_STAND, ItemsAxolotl::ARMOR_STAND());
+		$this->map1to1Item(Ids::BREEZE_ROD, ItemsAxolotl::BREEZE_ROD());
+		$this->map1to1Item(Ids::ARMADILLO_SCUTE, ItemsAxolotl::ARMADILLO_SCUTE());
+		$this->map1to1Item(Ids::ENDER_EYE, ItemsAxolotl::ENDER_EYE());
+		$this->map1to1Item(Ids::TRIAL_KEY, ItemsAxolotl::TRIAL_KEY());
+		$this->map1to1Item(Ids::OMINOUS_TRIAL_KEY, ItemsAxolotl::OMINOUS_TRIAL_KEY());
+		$this->map1to1Item(Ids::KELP, ItemsAxolotl::KELP());
+
+		$this->map1to1Item(Ids::BROWN_EGG, ItemsAxolotl::BROWN_EGG());
+		$this->map1to1Item(Ids::BLUE_EGG, ItemsAxolotl::BLUE_EGG());
+
+		foreach(BoatType::cases() as $boat){
+			$key = strtolower($boat->name);
+			$this->map1to1Item("minecraft:" . $key . "_chest_boat", ItemsAxolotl::{$boat->name . "_CHEST_BOAT"}());
+		}
+
+		foreach(BannerPatternType::cases() as $pattern){
+			$key = strtolower($pattern->name);
+			$this->map1to1Item("minecraft:" . $key . "_banner_pattern", ItemsAxolotl::{$pattern->name . "_BANNER_PATTERN"}());
+		}
+
+		foreach(PotterySherdType::cases() as $sherd){
+			$key = strtolower($sherd->name);
+			$this->map1to1Item("minecraft:" . $key . "_pottery_sherd", ItemsAxolotl::{$sherd->name . "_POTTERY_SHERD"}());
+		}
 	}
 }

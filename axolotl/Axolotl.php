@@ -6,7 +6,6 @@ namespace axolotl;
 
 use axolotl\block\AxolotlBlocks;
 use axolotl\block\AxolotlBlocksInputs;
-use axolotl\block\tile\AxolotlTileFactory;
 use axolotl\entity\AxolotlEntityFactory;
 use axolotl\item\AxolotlItems;
 use axolotl\item\AxolotlItemsInputs;
@@ -49,7 +48,6 @@ final class Axolotl{
 
 	public static function init() : void{
 		AxolotlEntityFactory::getInstance(); // Ensure the entity factory is initialized
-		AxolotlTileFactory::getInstance(); // Ensure the tile factory is initialized
 
 		AxolotlBlocksInputs::delayed(); // Ensure all custom block inputs are registered
 		AxolotlBlocks::getAll(); // Ensure all custom blocks are registered

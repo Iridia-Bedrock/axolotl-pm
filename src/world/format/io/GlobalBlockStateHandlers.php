@@ -56,7 +56,7 @@ final class GlobalBlockStateHandlers{
 			$deserializer = new BlockStateToObjectDeserializer();
 			$serializer = new BlockObjectToStateSerializer();
 			self::$registrar = new BlockSerializerDeserializerRegistrar($deserializer, $serializer);
-			\axolotl\data\bedrock\block\convert\VanillaBlockMappings::init(self::$registrar);
+			\pocketmine\data\bedrock\block\convert\VanillaBlockMappings::init(self::$registrar);
 		}
 		return self::$registrar;
 	}

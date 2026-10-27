@@ -23,6 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use axolotl\block\tile\CommandBlock as AxolotlCommandBlock;
+use axolotl\block\tile\CopperGolem as AxolotlCopperGolem;
+use axolotl\block\tile\SculkCatalyst as AxolotlSculkCatalyst;
+use axolotl\block\tile\SculkSensor as AxolotlSculkSensor;
+use axolotl\block\tile\SculkShrieker as AxolotlSculkShrieker;
+use axolotl\block\tile\Vault as AxolotlVault;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtException;
@@ -81,6 +87,13 @@ final class TileFactory{
 		$this->register(MobHead::class, ["Skull", "minecraft:skull"]);
 		$this->register(GlowingItemFrame::class, ["GlowItemFrame"]);
 		$this->register(HangingSign::class, ["HangingSign", "minecraft:hanging_sign"]);
+		$this->register(AxolotlSculkSensor::class, ["CalibratedSculkSensor", "minecraft:calibrated_sculk_sensor"]);
+		$this->register(AxolotlCommandBlock::class, ["CommandBlock", "minecraft:command_block"]);
+		$this->register(AxolotlSculkCatalyst::class, ["SculkCatalyst", "minecraft:sculk_catalyst"]);
+		$this->register(AxolotlSculkSensor::class, ["SculkSensor", "minecraft:sculk_sensor"]);
+		$this->register(AxolotlSculkShrieker::class, ["SculkShrieker", "minecraft:sculk_shrieker"]);
+		$this->register(AxolotlCopperGolem::class, ["CopperGolem", "minecraft:copper_golem"]);
+		$this->register(AxolotlVault::class, ["Vault", "minecraft:vault"]);
 
 		//TODO: ChalkboardBlock
 		//TODO: ChemistryTable

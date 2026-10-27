@@ -54,7 +54,7 @@ final class ItemSerializer{
 		private BlockStateSerializer $blockStateSerializer
 	){
 		$this->registerSpecialBlockSerializers();
-		new \axolotl\data\bedrock\item\ItemSerializerDeserializerRegistrar(null, $this);
+		new ItemSerializerDeserializerRegistrar(null, $this);
 	}
 
 	/**

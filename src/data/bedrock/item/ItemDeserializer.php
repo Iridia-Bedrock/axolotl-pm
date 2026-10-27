@@ -44,7 +44,7 @@ final class ItemDeserializer{
 	public function __construct(
 		private BlockStateDeserializer $blockStateDeserializer
 	){
-		new \axolotl\data\bedrock\item\ItemSerializerDeserializerRegistrar($this, null);
+		new ItemSerializerDeserializerRegistrar($this, null);
 	}
 
 	/**
