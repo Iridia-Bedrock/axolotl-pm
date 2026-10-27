@@ -65,6 +65,9 @@ class ItemEntity extends Entity{
 	protected int $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 	protected Item $item;
 
+	private int $pickupTargetTick = -1;
+	private ?int $pickupTargetId = null;
+
 	public function __construct(Location $location, Item $item, ?CompoundTag $nbt = null){
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Item entity must have a non-air item with a count of at least 1");
@@ -315,8 +318,74 @@ class ItemEntity extends Entity{
 		return $vector3->add(0, 0.125, 0);
 	}
 
+	private function canBePickedUpBy(Player $player) : bool{
+		$item = $this->getItem();
+		$playerInventory = match(true){
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
+			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
+			default => null
+		};
+
+		return !$player->hasFiniteResources() || $playerInventory !== null;
+	}
+
+	private function getPickupTarget() : ?Player{
+		$currentTick = $this->server->getTick();
+		if($this->pickupTargetTick === $currentTick){
+			$target = $this->getWorld()->getEntity($this->pickupTargetId ?? 0);
+			return $target instanceof Player && !$target->isFlaggedForDespawn() ? $target : null;
+		}
+
+		$this->pickupTargetTick = $currentTick;
+		$this->pickupTargetId = null;
+
+		/** @var list<array{distance: float, player: Player}> $candidates */
+		$candidates = [];
+		foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(1, 0.5, 1), $this) as $entity){
+			if(!$entity instanceof Player || !$entity->isAlive() || $entity->isFlaggedForDespawn() || !$this->canBePickedUpBy($entity)){
+				continue;
+			}
+
+			if(!$entity->getBoundingBox()->expandedCopy(1, 0.5, 1)->intersectsWith($this->boundingBox)){
+				continue;
+			}
+
+			$candidates[] = [
+				'distance' => $entity->getPosition()->distanceSquared($this->location),
+				'player' => $entity,
+			];
+		}
+
+		if($candidates === []){
+			return null;
+		}
+
+		$nearestDistance = INF;
+		foreach($candidates as $candidate){
+			$nearestDistance = min($nearestDistance, $candidate['distance']);
+		}
+
+		/** @var list<array{distance: float, player: Player}> $nearest */
+		$nearest = [];
+		foreach($candidates as $candidate){
+			if(abs($candidate['distance'] - $nearestDistance) < 1.0e-6){
+				$nearest[] = $candidate;
+			}
+		}
+
+		usort($nearest, static fn(array $a, array $b) : int => strcmp($a['player']->getUniqueId()->getBytes(), $b['player']->getUniqueId()->getBytes()));
+
+		$target = $nearest[$this->getId() % count($nearest)]['player'];
+		$this->pickupTargetId = $target->getId();
+
+		return $target;
+	}
+
 	public function onCollideWithPlayer(Player $player) : void{
 		if($this->getPickupDelay() !== 0){
+			return;
+		}
+		if($this->getPickupTarget()?->getId() !== $player->getId()){
 			return;
 		}
 
