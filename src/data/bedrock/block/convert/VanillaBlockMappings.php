@@ -43,7 +43,6 @@ use axolotl\block\SeaGrass;
 use axolotl\block\SnifferEgg;
 use axolotl\block\TrialSpawner;
 use axolotl\block\TurtleEgg;
-use axolotl\block\Vault;
 use axolotl\block\utils\Attachment;
 use axolotl\block\utils\Brushable;
 use axolotl\block\utils\CrackedState;
@@ -53,6 +52,7 @@ use axolotl\block\utils\PaleMossCarpetSide;
 use axolotl\block\utils\SeaGrassType;
 use axolotl\block\utils\TurtleEggCount;
 use axolotl\block\utils\VaultState;
+use axolotl\block\Vault;
 use pocketmine\block\ActivatorRail;
 use pocketmine\block\AmethystCluster;
 use pocketmine\block\Anvil;
@@ -161,6 +161,7 @@ use pocketmine\math\Facing;
 use function array_map;
 use function min;
 use function range;
+use function strtolower;
 
 /**
  * @internal

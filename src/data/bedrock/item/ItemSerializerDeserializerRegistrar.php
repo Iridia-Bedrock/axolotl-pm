@@ -43,6 +43,7 @@ use pocketmine\data\bedrock\MedicineTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
+use pocketmine\item\BoatType;
 use pocketmine\item\Dye;
 use pocketmine\item\FireworkStar;
 use pocketmine\item\GoatHorn;
@@ -52,8 +53,9 @@ use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\SuspiciousStew;
 use pocketmine\item\VanillaItems as Items;
-use pocketmine\item\BoatType;
 use pocketmine\nbt\tag\CompoundTag;
+use function str_replace;
+use function strtolower;
 
 class ItemSerializerDeserializerRegistrar{
 

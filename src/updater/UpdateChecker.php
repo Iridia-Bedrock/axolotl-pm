@@ -31,8 +31,8 @@ use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
 use pocketmine\YmlServerProperties;
 use function date;
-use function substr;
 use function strtolower;
+use function substr;
 use function ucfirst;
 
 class UpdateChecker{

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\nethernet;
 
+use axolotl\network\mcpe\NetworkSession;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\VarInt;
 use pmmp\thread\ThreadSafeArray;
@@ -39,7 +40,6 @@ use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\EntityEventBroadcaster;
-use axolotl\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
