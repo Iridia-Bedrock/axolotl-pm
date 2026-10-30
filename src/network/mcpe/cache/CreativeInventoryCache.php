@@ -67,6 +67,8 @@ final class CreativeInventoryCache{
 		$categories = [];
 		$groups = [];
 
+		$typeConverter = TypeConverter::getInstance();
+
 		$nextIndex = 0;
 		$groupIndexes = [];
 		$itemGroupIndexes = [];
@@ -90,7 +92,17 @@ final class CreativeInventoryCache{
 			$itemGroupIndexes[$k] = $groupIndexes[$category->name][$groupId];
 		}
 
-		return new CreativeInventoryCacheEntry($categories, $groups, $itemGroupIndexes);
+		//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
+		$items = [];
+		foreach($inventory->getAllEntries() as $k => $entry){
+			$items[] = new CreativeItemEntry(
+				$k,
+				$typeConverter->coreItemStackToNet($entry->getItem()),
+				$itemGroupIndexes[$k]
+			);
+		}
+
+		return new CreativeInventoryCacheEntry($categories, $groups, $items);
 	}
 
 	public function buildPacket(CreativeInventory $inventory, NetworkSession $session) : CreativeContentPacket{
@@ -136,19 +148,6 @@ final class CreativeInventoryCache{
 			}
 		}
 
-		// Item stacks may contain Translatable custom names and lore. They must be
-		// converted for this session, since the converter uses the player's language.
-		// Caching these entries would make the first player's language leak to every
-		// other player receiving the same creative inventory.
-		$items = [];
-		foreach($inventory->getAllEntries() as $k => $entry){
-			$items[] = new CreativeItemEntry(
-				$k,
-				$typeConverter->coreItemStackToNet($entry->getItem()),
-				$cachedEntry->itemGroupIndexes[$k]
-			);
-		}
-
-		return CreativeContentPacket::create($groupEntries, $items);
+		return CreativeContentPacket::create($groupEntries, $cachedEntry->items);
 	}
 }
